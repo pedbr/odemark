@@ -5,6 +5,8 @@
   "assets": {
     // Repo root is the site itself — index.html sits beside this file.
     // Files listed in .assetsignore are not uploaded or served.
+    // 404.html is for missing documents. The hero stills paint from first
+    // frame so a swallowed /img/hero.mp4 cannot black out the arrival.
     "directory": ".",
     "not_found_handling": "404-page"
   }

@@ -87,6 +87,11 @@ exists, the page automatically falls back to slow-crossfading stills
 (`img/mist.jpg`, `hero-2.jpg`, `hero-3.jpg`) — no code change involved in
 either direction, just add or remove the file.
 
+The first still (`mist.jpg`) is visible in CSS from the first paint, including
+as the `.hero-media` background. A missing `hero.mp4` — or the edge serving
+`404.html` in its place — must never leave a black `<video>` over hidden
+stills. Video takes over only if it actually plays.
+
 When exporting the real clip: H.264 mp4, 1600 px wide is plenty behind the
 scrim, **no audio track**, 10–20 s seamless loop, target under ~3 MB
 (two-pass, CRF ≈ 28 works). Keep `img/mist.jpg` as the poster or replace it
@@ -94,6 +99,10 @@ with the clip's first frame. Slow, near-static footage suits the brand and
 compresses far better than movement. `prefers-reduced-motion` visitors never
 get the video — the static still serves instead; that behaviour is deliberate
 (motion charter).
+
+Stylesheet and script URLs are fingerprinted (`main.css?v=`, `main.js?v=`).
+Bump the query when those files change; `_headers` caches `/css` and `/js`
+for a week.
 
 ## To fill in before launch
 

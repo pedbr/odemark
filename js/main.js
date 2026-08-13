@@ -10,36 +10,51 @@
   var sym = document.querySelector(".hero-symbol");
   if (sym) requestAnimationFrame(function () { sym.classList.add("draw"); });
 
-  // hero media: ambient video when /img/hero.mp4 exists, otherwise
-  // slow-crossfading stills. Reduced motion gets one static still.
+  // hero media: stills are painted in CSS from first frame (mist.jpg).
+  // Video takes over only if /img/hero.mp4 actually plays. A missing
+  // file — or Cloudflare serving 404.html as the mp4 — must never
+  // leave a black <video> on top of hidden stills.
   var heroVideo = document.getElementById("hero-video");
   if (heroVideo) {
     var stills = document.querySelectorAll(".hero-still");
-    var playing = false, fellBack = false;
-    var fallback = function () {
-      if (fellBack) return;
-      fellBack = true;
-      heroVideo.remove();
-      if (!stills.length) return;
-      stills[0].classList.add("on");
-      if (!reduced && stills.length > 1) {
-        var i = 0;
-        setInterval(function () {
-          stills[i].classList.remove("on");
-          i = (i + 1) % stills.length;
-          stills[i].classList.add("on");
-        }, 9000);
-      }
+    var media = heroVideo.parentElement;
+    var playing = false, carouselTimer = null;
+
+    var startCarousel = function () {
+      if (reduced || stills.length < 2 || carouselTimer) return;
+      var i = 0;
+      for (var s = 0; s < stills.length; s++) stills[s].classList.toggle("on", s === 0);
+      carouselTimer = setInterval(function () {
+        stills[i].classList.remove("on");
+        i = (i + 1) % stills.length;
+        stills[i].classList.add("on");
+      }, 9000);
     };
-    heroVideo.addEventListener("playing", function () { playing = true; });
+
+    var dropVideo = function () {
+      if (!heroVideo || !heroVideo.parentNode) return;
+      heroVideo.remove();
+      heroVideo = null;
+      if (media) media.classList.remove("has-video");
+      startCarousel();
+    };
+
+    heroVideo.addEventListener("playing", function () {
+      playing = true;
+      if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+      if (media) media.classList.add("has-video");
+    });
+    heroVideo.addEventListener("error", dropVideo);
     var src = heroVideo.querySelector("source");
-    if (src) src.addEventListener("error", fallback);
+    if (src) src.addEventListener("error", dropVideo);
+
     if (reduced) {
       heroVideo.removeAttribute("autoplay");
       heroVideo.pause();
-      fallback();
+      dropVideo();
     } else {
-      setTimeout(function () { if (!playing) fallback(); }, 3000);
+      startCarousel();
+      setTimeout(function () { if (!playing) dropVideo(); }, 2000);
     }
   }
 

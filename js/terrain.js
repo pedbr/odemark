@@ -123,6 +123,7 @@
   }
 
   var WATER = 0.36;
+  var SHORE = 4; // cells ≈ 500 m — outline must actually meet the lake
 
   function slopeAt(x, y) {
     var x0 = Math.max(x - 1, 0), x1 = Math.min(x + 1, GRID_W - 1);
@@ -132,10 +133,11 @@
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  function distToWater(x, y) { // coarse radial probe
+  function distToWater(x, y) { // radial probe, 12 rays
     for (var r = 1; r < 14; r++) {
-      for (var a = 0; a < 8; a++) {
-        var px = Math.round(x + r * Math.cos(a * 0.785)), py = Math.round(y + r * Math.sin(a * 0.785));
+      for (var a = 0; a < 12; a++) {
+        var ang = a * 0.5236;
+        var px = Math.round(x + r * Math.cos(ang)), py = Math.round(y + r * Math.sin(ang));
         if (px < 0 || py < 0 || px >= GRID_W || py >= GRID_H) continue;
         if (elev[py * GRID_W + px] < WATER) return r;
       }
@@ -283,6 +285,64 @@
      loosening a condition can only reveal zones, tightening can only hide
      them — the same contract as the app. */
 
+  function injectShoreZone() {
+    // last resort: stamp a blob on the best stretch of shore so "Near water"
+    // always has a member whose outline sits on the lake, not an inland leftover.
+    var score = new Float32Array(GRID_W * GRID_H);
+    var best = 0, bx = 6, by = 5;
+    for (var y = 5; y < GRID_H - 6; y++) {
+      for (var x = 6; x < GRID_W - 7; x++) {
+        if (elev[y * GRID_W + x] < WATER + 0.01) continue;
+        var dw = distToWater(x, y);
+        if (dw < 1 || dw > 6) continue;
+        var prox = dw <= 3 ? 1 : Math.max(0, 1 - (dw - 3) / 3);
+        var sl = Math.max(0, 1 - slopeAt(x, y) / 0.12);
+        var s = prox * (0.4 + 0.6 * sl);
+        score[y * GRID_W + x] = s;
+        if (s > best) { best = s; bx = x; by = y; }
+      }
+    }
+    if (best < 0.15) return null;
+
+    var thr = Math.max(0.12, best * 0.4);
+    var field = new Float32Array(GRID_W * GRID_H);
+    var qx = [bx], qy = [by], qi = 0, n = 0;
+    var seen = new Uint8Array(GRID_W * GRID_H);
+    seen[by * GRID_W + bx] = 1;
+    while (qi < qx.length && n < 220) {
+      var x0 = qx[qi], y0 = qy[qi]; qi++;
+      if (score[y0 * GRID_W + x0] < thr) continue;
+      field[y0 * GRID_W + x0] = 1;
+      n++;
+      for (var dy = -1; dy <= 1; dy++) {
+        for (var dx = -1; dx <= 1; dx++) {
+          if (!dx && !dy) continue;
+          var nx = x0 + dx, ny = y0 + dy;
+          if (nx < 6 || ny < 5 || nx >= GRID_W - 7 || ny >= GRID_H - 6) continue;
+          var ni = ny * GRID_W + nx;
+          if (seen[ni] || score[ni] < thr) continue;
+          seen[ni] = 1;
+          qx.push(nx); qy.push(ny);
+        }
+      }
+    }
+    if (n < 12) return null;
+
+    var paths = marchingSquares(field, 0.5).filter(function (p) { return p.length > 11; });
+    if (!paths.length) return null;
+    paths.sort(function (a, b) { return b.length - a.length; });
+    var path = paths[0];
+    var meta = blobArea(field, 0.5, path);
+    var idx = zones.length;
+    var z = { path: path, meta: meta, idx: idx, attrs: zoneAttrs(idx, meta, path) };
+    z.attrs.nearWater = true;
+    z.attrs.wDist = Math.min(z.attrs.wDist, SHORE);
+    z.attrs.waterM = Math.max(60, z.attrs.wDist * 126);
+    z.attrs.tentOk = true;
+    z.attrs.wetRisk = false;
+    return z;
+  }
+
   function computeAllZones() {
     // generous neutral pass — the full candidate set, with a shoreline bonus
     // so lakeside ground competes the way it does in the real analysis
@@ -292,11 +352,11 @@
         var gi = gy * GRID_W + gx;
         if (gx > 6 && gy > 5 && gx < GRID_W - 7 && gy < GRID_H - 6) {
           var dwB = distToWater(gx, gy);
-          if (dwB >= 2 && dwB <= 3) {
-            // shores are steeper in this terrain; judge them by a gentler
-            // slope bar or no lakeside blob ever survives
-            var shore = Math.max(0, 1 - slopeAt(gx, gy) / 0.1) * 0.95;
-            raw[gi] = Math.min(1, Math.max(raw[gi] * 2, shore));
+          if (dwB >= 1 && dwB <= 6) {
+            var prox = dwB <= 3 ? 1 : Math.max(0, 1 - (dwB - 3) / 3);
+            var shore = Math.max(0, 1 - slopeAt(gx, gy) / 0.12) * (0.75 + 0.25 * prox);
+            raw[gi] = Math.min(1, Math.max(raw[gi], shore));
+            if (dwB <= 4) raw[gi] = Math.min(1, Math.max(raw[gi] * 1.45, shore));
           }
         }
       }
@@ -321,10 +381,10 @@
     }).filter(function (z) { return z.meta.cells >= 10; });
 
     /* curated roles so every control demonstrably does something:
-       zone 0 — flagship, survives every default
-       zone 1 — near water, survives defaults (the "Near water" answer)
-       zone 2 — waterlogs in rain (appears only with "Rain OK")
-       zone 3 — too uneven for a tent (appears when "Tent" is off) */
+       flagship — survives every default (prefer inland, so water is a narrowing)
+       water    — outline on the lake, survives defaults
+       rain     — waterlogs; appears only with "Rain OK"
+       tent-off — too uneven; appears when "Tent" is off */
     function passDefaults(a) {
       // survives the default selects, but stays inside the mid tiers so the
       // stricter setbacks still have zones to hide
@@ -332,29 +392,46 @@
       a.roadM = 600 + (a.roadM % 350);    // 600–949: hidden at "≥ 1 km"
       a.bldM = 400 + (a.bldM % 300);      // 400–699: partly hidden at "≥ 500 m"
     }
-    if (zones.length) {
-      var a0 = zones[0].attrs;
+
+    zones.forEach(function (z) {
+      z.attrs.nearWater = z.attrs.wDist <= SHORE;
+      if (z.attrs.nearWater) z.attrs.waterM = Math.max(60, z.attrs.wDist * 126);
+    });
+
+    var flag = zones[0];
+    for (var fi = 0; fi < zones.length; fi++) {
+      if (!zones[fi].attrs.nearWater) { flag = zones[fi]; break; }
+    }
+    if (flag) {
+      var a0 = flag.attrs;
       a0.tentOk = true; a0.wetRisk = false; passDefaults(a0);
       a0.roadM = Math.max(a0.roadM, 1100); a0.bldM = Math.max(a0.bldM, 520);
     }
 
-    // the water answer must be a zone that genuinely lies by water: take the
-    // one closest to shore and make sure it survives the defaults
     var waterZ = null;
     zones.forEach(function (z) {
+      if (!z.attrs.nearWater) return;
       if (!waterZ || z.attrs.wDist < waterZ.attrs.wDist) waterZ = z;
     });
-    if (waterZ && waterZ.attrs.wDist <= 5) {
-      var aw = waterZ.attrs;
-      aw.nearWater = true;
-      aw.waterM = Math.max(60, aw.wDist * 126);
-      if (waterZ !== zones[0]) { aw.tentOk = true; aw.wetRisk = false; passDefaults(aw); }
-    } else {
-      waterZ = null; // nothing genuinely by water — no zone claims it
+    if (!waterZ) {
+      var injected = injectShoreZone();
+      if (injected) {
+        zones.push(injected);
+        waterZ = injected;
+      }
+    }
+    if (waterZ) {
+      waterZ.attrs.nearWater = true;
+      waterZ.attrs.tentOk = true;
+      waterZ.attrs.wetRisk = false;
+      passDefaults(waterZ.attrs);
+      if (waterZ === flag) {
+        waterZ.attrs.roadM = Math.max(waterZ.attrs.roadM, 1100);
+        waterZ.attrs.bldM = Math.max(waterZ.attrs.bldM, 520);
+      }
     }
 
-    // remaining roles land on zones not already spoken for
-    var rest = zones.filter(function (z) { return z !== zones[0] && z !== waterZ; });
+    var rest = zones.filter(function (z) { return z !== flag && z !== waterZ; });
     if (rest[0]) { // waterlogs in rain — appears only with "Rain OK"
       var a2 = rest[0].attrs;
       a2.tentOk = true; a2.wetRisk = true; passDefaults(a2);
@@ -368,6 +445,7 @@
       a4.tentOk = true; a4.wetRisk = false; passDefaults(a4);
       a4.travelMin = 55 + (a4.travelMin % 30);
     }
+    zones.forEach(function (z, i) { z.idx = i; });
   }
 
   function zoneAttrs(i, meta, path) {
@@ -387,7 +465,7 @@
       bldM: 200 + Math.round(rnd() * 700),         // distance to nearest building
       wetRisk: wet[cy * GRID_W + cx] > 0.5,        // waterlogs in rain
       wDist: wDist,
-      nearWater: wDist <= 4,                       // the zone actually touches shore country
+      nearWater: wDist <= SHORE,                   // outline actually meets shore
       waterM: Math.max(60, Math.round(wDist * 126 + rnd() * 60)),
       tentOk: rnd() > 0.3,                         // flat enough for a tent
       slope: 2 + Math.round(rnd() * 4),
@@ -578,10 +656,16 @@
   // debug handle (harmless in production; no PII, deterministic data only)
   Object.defineProperty(window, "__odemarkZones", { get: function () { return zones; } });
   window.__odemarkDebug = {
-    GRID_W: GRID_W, GRID_H: GRID_H, WATER: WATER,
+    GRID_W: GRID_W, GRID_H: GRID_H, WATER: WATER, SHORE: SHORE,
     get elev() { return elev; },
     distToWater: distToWater,
-    version: 3
+    run: function (name) {
+      seedName = name;
+      buildFields(name);
+      computeAllZones();
+      return zones;
+    },
+    version: 4
   };
 
   // lazy start when the demo scrolls into view
