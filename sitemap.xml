@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://odemark.se/</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/"/>
+  </url>
+  <url>
+    <loc>https://odemark.se/en/</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/"/>
+  </url>
+  <url>
+    <loc>https://odemark.se/allemansratten.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/allemansratten.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/allemansratten.html"/>
+  </url>
+  <url>
+    <loc>https://odemark.se/en/allemansratten.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/allemansratten.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/allemansratten.html"/>
+  </url>
+  <url>
+    <loc>https://odemark.se/integritet.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/integritet.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://odemark.se/en/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/integritet.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://odemark.se/press.html</loc>
+  </url>
+</urlset>

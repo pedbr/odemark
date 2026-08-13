@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ödemark — computed camping ground. Ingen har varit här.</title>
+<meta name="description" content="Ödemark computes unfound camping ground from official Swedish geodata, under the rules of allemansrätten. Zones, never pins. The places you find stay private.">
+<link rel="canonical" href="https://odemark.se/en/">
+<link rel="alternate" hreflang="sv" href="https://odemark.se/">
+<link rel="alternate" hreflang="en" href="https://odemark.se/en/">
+<link rel="alternate" hreflang="x-default" href="https://odemark.se/en/">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0B0F13">
+<meta property="og:title" content="Ödemark — Ingen har varit här">
+<meta property="og:description" content="Computed camping ground from public geodata. Zones, never pins. Private, permanently.">
+<meta property="og:image" content="https://odemark.se/img/og.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://odemark.se/en/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/img/odemark-app-icon.png">
+<link rel="apple-touch-icon" href="/img/odemark-app-icon.png">
+<!-- app store smart banner — real app id at launch -->
+<!-- <meta name="apple-itunes-app" content="app-id=XXXXXXXXX"> -->
+<link rel="preload" href="/fonts/schibsted-grotesk-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/newsreader-400-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="/en/" aria-label="Ödemark — home">
+      <svg viewBox="0 0 64 76" aria-hidden="true"><circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/><circle cx="23" cy="9" r="5.5" fill="currentColor"/><circle cx="41" cy="9" r="5.5" fill="currentColor"/></svg>
+      <span>Ödemark</span>
+    </a>
+    <a class="nav-link nav-optional" href="/en/allemansratten.html">Allemansrätten</a>
+    <a class="nav-link nav-optional" href="/en/privacy.html">Privacy</a>
+    <a class="nav-link" href="/" lang="sv">Svenska</a>
+    <a class="nav-cta" href="#get">Get the app</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- arrival: nearly nothing -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div>
+      <svg class="hero-symbol" viewBox="0 0 64 76" aria-hidden="true">
+        <circle class="ring" cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/>
+        <circle cx="23" cy="9" r="5.5" fill="currentColor"/>
+        <circle cx="41" cy="9" r="5.5" fill="currentColor"/>
+      </svg>
+      <h1 id="hero-title" class="display">Ödemark</h1>
+      <p class="tagline" lang="sv">— Ingen har varit här —</p>
+      <p class="hero-line">Ödemark computes unfound camping ground from official
+      Swedish geodata, under the rules of allemansrätten. Zones, never pins.
+      The places you find stay private.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#map">Watch the map compute</a>
+        <a class="btn btn-accent" href="#get">Get the app</a>
+      </div>
+    </div>
+    <span class="hero-scroll caption" aria-hidden="true">Scroll</span>
+  </section>
+
+  <!-- the demo: the site runs the algorithm -->
+  <section id="map" aria-labelledby="map-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">01 · The map</span>
+        <h2 id="map-title">Type a town. The map computes.</h2>
+        <p class="lede">No signup. Zones are computed from the terrain — slope,
+        ground wetness, distance to roads and buildings, protected areas.
+        Currently: Stockholms län.</p>
+      </div>
+
+      <div class="demo-frame reveal" style="--stagger:1">
+        <div class="demo-toolbar">
+          <input type="text" id="demo-place" list="towns" placeholder="Town in Stockholms län"
+                 aria-label="Town in Stockholms län" autocomplete="off" spellcheck="false">
+          <datalist id="towns">
+            <option>Stockholm</option><option>Norrtälje</option><option>Nynäshamn</option>
+            <option>Södertälje</option><option>Vaxholm</option><option>Gustavsberg</option>
+            <option>Åkersberga</option><option>Märsta</option><option>Hallstavik</option>
+            <option>Rimbo</option><option>Dalarö</option><option>Grisslehamn</option>
+          </datalist>
+          <button class="chip" data-filter="tent" aria-pressed="true">Tent</button>
+          <button class="chip" data-filter="rainok" aria-pressed="false">Rain OK</button>
+          <button class="chip" data-filter="water" aria-pressed="false">Near water</button>
+          <button class="chip" id="demo-locate">My position</button>
+        </div>
+        <div class="demo-stage" id="demo-stage">
+          <canvas id="terrain-canvas" aria-label="Terrain map with computed zones" role="img"></canvas>
+          <svg id="zones-svg" aria-label="Computed zones"></svg>
+          <div class="demo-log" id="demo-log" aria-hidden="true"></div>
+          <div class="demo-readout" id="demo-readout" role="status"></div>
+          <div class="demo-empty" id="demo-empty">
+            <div>
+              <p>Not computed here yet. Coverage rolls out county by county —
+              Stockholms län is first.</p>
+              <a class="btn" href="#region">Tell me when my region is computed</a>
+            </div>
+          </div>
+          <span class="demo-attrib">simplified demo terrain · the app: © Lantmäteriet</span>
+        </div>
+      </div>
+
+      <div class="demo-note reveal" style="--stagger:2">
+        <p class="quiet">Somewhere in here looks workable.</p>
+        <span class="data" id="demo-count" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- the inversion -->
+  <section aria-labelledby="why-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">02 · Why</span>
+        <h2 id="why-title">Every other app shows you where everyone else went.</h2>
+      </div>
+      <div class="two-col">
+        <div class="reveal" style="--stagger:1">
+          <p>Every outdoor app on the market is a database of submitted places.
+          The model has a permanent flaw: people who find good ground don't
+          publish it. A shared spot stops being the spot you shared.</p>
+        </div>
+        <div class="reveal" style="--stagger:2">
+          <p>Ödemark collects nothing from any crowd. Candidate ground is computed
+          from official Swedish geodata. Every search gets its own answer — two
+          thousand people are never sent to the same lakeshore.</p>
+          <p class="quiet" style="margin-top:24px">The computation is only possible in
+          countries with freedom to roam. That is why this app hasn't existed
+          until now.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">03 · How it computes</span>
+        <h2 id="how-title">Deterministic analysis of government data.</h2>
+        <p class="lede">Same input, same answer. The app weighs terrain factors
+        against each other and draws zones where the conditions hold.</p>
+      </div>
+      <div class="sources reveal" style="--stagger:1">
+        <div class="source-row">
+          <span class="data">Lantmäteriet</span>
+          <p>National elevation model, 2 m resolution. Height and slope — the basis for everything.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">Naturvårdsverket · NMD</span>
+          <p>National land-cover data. Forest type, wetland, open ground.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">Protected areas</span>
+          <p>National parks, reserves and local rules that restrict camping.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">Buildings and roads</span>
+          <p>Distance to dwellings and drivable roads. The home-privacy zone is respected.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">SMHI</span>
+          <p>Weather as a filter, not a judgement.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- zones, not pins -->
+  <section aria-labelledby="zones-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">04 · Zones, not pins</span>
+        <h2 id="zones-title">Roughly here. Never exactly there.</h2>
+      </div>
+      <div class="library-grid">
+        <div>
+          <div class="zones-figure" style="margin-top:0">
+            <div class="zone-card reveal" style="--stagger:1">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="22" fill="none" stroke="var(--zone)" stroke-width="2.5" stroke-dasharray="8 7" stroke-linecap="round"/></svg>
+              <span class="caption">Computed zone</span>
+              <p>Somewhere in this area the ground looks workable. The app never
+              points at a spot — the last kilometre is yours.</p>
+            </div>
+            <div class="zone-card reveal" style="--stagger:2">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="7" fill="currentColor"/></svg>
+              <span class="caption">Saved place</span>
+              <p>Once you have stood there, you save the place exactly —
+              coordinates, note, photo. Visible only to you.</p>
+            </div>
+          </div>
+        </div>
+        <div class="reveal" style="--stagger:3">
+          <img class="phone" src="/img/02-search.png" width="880" height="1913"
+               loading="lazy" decoding="async"
+               alt="The app's search view: dark terrain map of Lunsen with three dashed zones and the filters Tent, Rain OK, Near water">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the library — the register shifts here -->
+  <section id="library" class="library" aria-labelledby="lib-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">05 · The library</span>
+        <h2 id="lib-title">What you find is yours.</h2>
+        <p class="lede">The library is a notebook, not a feed. Exact coordinates,
+        your photos, your words. There is no share button to leave on by mistake.</p>
+      </div>
+      <div class="library-grid">
+        <div class="reveal" style="--stagger:1">
+          <div class="spot-card">
+            <img class="photo" src="/img/spot-photo.jpg" width="1200" height="1500"
+                 loading="lazy" decoding="async"
+                 alt="Conifer forest with a stream and mossy boulders">
+            <div class="body">
+              <div class="spot-title"><span class="dot" aria-hidden="true"></span><h3>Hällen north of Vallsjön</h3></div>
+              <span class="caption only-you">Only you can see this place</span>
+              <label class="caption" for="field-note" style="display:none">Field note</label>
+              <textarea class="spot-note" id="field-note" rows="3"
+                spellcheck="false">Wind-sheltered hollow behind the rock slab. Firewood nearby. Come back in October.</textarea>
+              <dl class="spot-meta">
+                <div><dt>Visits</dt><dd>2 nights · Sep 2026</dd></div>
+                <div><dt>Coordinates</dt><dd>59.8712°N 17.5104°E</dd></div>
+                <div><dt>Elevation</dt><dd>42 m</dd></div>
+              </dl>
+            </div>
+          </div>
+          <p class="caption net-proof">Type in the note — it is kept in your browser
+          and sent nowhere. Open the network tab and check.</p>
+        </div>
+        <div class="reveal" style="--stagger:2">
+          <img class="phone" src="/img/07-spot-detail.png" width="880" height="1913"
+               loading="lazy" decoding="async"
+               alt="The app's place view: Hällen north of Vallsjön, only you can see this place, an italic serif note and exact coordinates">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- privacy, stated flatly -->
+  <section class="privacy-flat" aria-labelledby="priv-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">06 · Privacy</span>
+        <h2 id="priv-title">Nobody can see your places. Including us.</h2>
+      </div>
+      <div class="rows reveal" style="--stagger:1">
+        <div>
+          <span class="data">sharing</span>
+          <p>Does not exist. There is no feature to leave on by mistake.</p>
+        </div>
+        <div>
+          <span class="data">feed</span>
+          <p>Does not exist. No followers, no likes, no community to join.</p>
+        </div>
+        <div>
+          <span class="data">your places</span>
+          <p>Stored encrypted in your library. Not visible to other users, not to us.</p>
+        </div>
+        <div>
+          <span class="data">this website</span>
+          <p>No cookies, no third-party code, no tracking. That is why there is no
+          cookie banner. The network tab confirms it.</p>
+        </div>
+      </div>
+      <p class="quiet reveal" style="--stagger:2; margin-top:40px">To share your spot is
+      to lose it. The app is built so that you can't.</p>
+    </div>
+  </section>
+
+  <!-- ground truth -->
+  <section class="ground-truth" aria-labelledby="ground-title">
+    <div class="backdrop" style="--mist-url:url('/img/mist.jpg')" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">07 · Ground truth</span>
+        <h2 id="ground-title">The algorithm chooses. Then we go there.</h2>
+        <p class="lede">Ödemark picks a zone the founder has never seen. He walks in,
+        films, and reports the outcome — including when the computation is wrong.</p>
+      </div>
+      <div class="episodes">
+        <article class="episode reveal" style="--stagger:1">
+          <button class="thumb" data-yt="" data-title="Episode 01 · Lunsen" disabled>( field footage — published at launch )</button>
+          <h3>Episode 01 · Lunsen</h3>
+          <span class="data">outcome: campable · rock slab, dry</span>
+          <span class="data">1.9 km from road · 2 nights</span>
+        </article>
+        <article class="episode reveal" style="--stagger:2">
+          <button class="thumb" data-yt="" data-title="Episode 02 · Norrtälje inland" disabled>( field footage — published at launch )</button>
+          <h3>Episode 02 · Norrtälje inland</h3>
+          <span class="data verdict-bad">outcome: wrong — waterlogged after rain</span>
+          <span class="data">model adjusted: wetness weight raised</span>
+        </article>
+        <article class="episode reveal" style="--stagger:3">
+          <button class="thumb" data-yt="" data-title="Episode 03 · Södertörn" disabled>( field footage — published at launch )</button>
+          <h3>Episode 03 · Södertörn</h3>
+          <span class="data">outcome: campable · sparse pine forest</span>
+          <span class="data">40 min walk from parking</span>
+        </article>
+      </div>
+      <p class="caption reveal" style="--stagger:4; margin-top:32px">Failures are reported
+      openly. Video loads only when you click — via youtube-nocookie.</p>
+    </div>
+  </section>
+
+  <!-- install -->
+  <section id="get" class="install" aria-labelledby="get-title">
+    <div class="wrap">
+      <svg class="hero-symbol reveal" viewBox="0 0 64 76" aria-hidden="true">
+        <circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/>
+        <circle cx="23" cy="9" r="5.5" fill="currentColor"/>
+        <circle cx="41" cy="9" r="5.5" fill="currentColor"/>
+      </svg>
+      <h2 id="get-title" class="reveal" style="--stagger:1">Ödemark is available for iOS and Android.</h2>
+      <p class="lede reveal" style="--stagger:2">Free to download. Stockholms län is
+      computed; more counties follow.</p>
+      <div class="store-row reveal" style="--stagger:3">
+        <a class="btn btn-accent" href="https://apps.apple.com/se/app/odemark" rel="noopener">App Store</a>
+        <a class="btn btn-accent" href="https://play.google.com/store/apps/details?id=se.odemark.app" rel="noopener">Google Play</a>
+      </div>
+
+      <form id="region-form" class="region-form reveal" style="--stagger:4" data-endpoint="">
+        <label class="caption" id="region" for="region-email">Outside Stockholms län?
+        Leave your email and we will say when your region is computed.</label>
+        <div class="row">
+          <input type="email" id="region-email" name="email" required
+                 placeholder="name@example.com" autocomplete="email">
+          <button class="btn" type="submit">Note it</button>
+        </div>
+        <p class="confirm" role="status">Noted. One row in a list — not a newsletter.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <svg viewBox="0 0 64 76" aria-hidden="true"><circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/><circle cx="23" cy="9" r="5.5" fill="currentColor"/><circle cx="41" cy="9" r="5.5" fill="currentColor"/></svg>
+        <span>Ödemark</span>
+      </div>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="/en/allemansratten.html">Allemansrätten</a>
+        <a href="/en/privacy.html">Privacy</a>
+        <a href="/press.html">Press</a>
+        <a href="/" lang="sv">Svenska</a>
+      </nav>
+    </div>
+    <div class="foot-meta">
+      <span class="data">© 2026 Ödemark · odemark.se</span>
+      <span class="data">No cookies. No tracking. Terrain data in the app: © Lantmäteriet.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+window.ODEMARK_DEMO_I18N = {
+  log: [
+    "reading elevation model (2 m)",
+    "slope < 15°",
+    "ground wetness",
+    "distance to road > 200 m",
+    "distance to building > 150 m",
+    "protected areas",
+    "allemansrätten"
+  ],
+  grounds: [
+    "dry moraine · sparse pine",
+    "rock slab with moss",
+    "sandy heath",
+    "firm ground above wet seam"
+  ],
+  zoneLabel: "zone",
+  zones: "zones",
+  fromRoad: "from nearest road"
+};
+</script>
+<script src="/js/main.js" defer></script>
+<script src="/js/terrain.js" defer></script>
+</body>
+</html>

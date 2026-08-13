@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ödemark — beräknad tältmark. Ingen har varit här.</title>
+<meta name="description" content="Ödemark beräknar ofunnen tältmark ur offentliga svenska geodata, under allemansrättens regler. Zoner, aldrig nålar. Platserna du hittar förblir privata.">
+<link rel="canonical" href="https://odemark.se/">
+<link rel="alternate" hreflang="sv" href="https://odemark.se/">
+<link rel="alternate" hreflang="en" href="https://odemark.se/en/">
+<link rel="alternate" hreflang="x-default" href="https://odemark.se/en/">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0B0F13">
+<meta property="og:title" content="Ödemark — Ingen har varit här">
+<meta property="og:description" content="Beräknad tältmark ur offentliga geodata. Zoner, aldrig nålar. Privat, permanent.">
+<meta property="og:image" content="https://odemark.se/img/og.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://odemark.se/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/img/odemark-app-icon.png">
+<link rel="apple-touch-icon" href="/img/odemark-app-icon.png">
+<!-- app store smart banner — fylls med riktigt app-id vid lansering -->
+<!-- <meta name="apple-itunes-app" content="app-id=XXXXXXXXX"> -->
+<link rel="preload" href="/fonts/schibsted-grotesk-500-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/newsreader-400-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<a class="skip" href="#main">Hoppa till innehållet</a>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="/" aria-label="Ödemark — start">
+      <svg viewBox="0 0 64 76" aria-hidden="true"><circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/><circle cx="23" cy="9" r="5.5" fill="currentColor"/><circle cx="41" cy="9" r="5.5" fill="currentColor"/></svg>
+      <span>Ödemark</span>
+    </a>
+    <a class="nav-link nav-optional" href="/allemansratten.html">Allemansrätten</a>
+    <a class="nav-link nav-optional" href="/integritet.html">Integritet</a>
+    <a class="nav-link" href="/en/" lang="en">English</a>
+    <a class="nav-cta" href="#hamta">Hämta</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- arrival: nearly nothing -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div>
+      <svg class="hero-symbol" viewBox="0 0 64 76" aria-hidden="true">
+        <circle class="ring" cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/>
+        <circle cx="23" cy="9" r="5.5" fill="currentColor"/>
+        <circle cx="41" cy="9" r="5.5" fill="currentColor"/>
+      </svg>
+      <h1 id="hero-title" class="display">Ödemark</h1>
+      <p class="tagline">— Ingen har varit här —</p>
+      <p class="hero-line">Ödemark beräknar ofunnen tältmark ur offentliga geodata,
+      under allemansrättens regler. Zoner, aldrig nålar.
+      Platserna du hittar förblir privata.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#karta">Se kartan räkna</a>
+        <a class="btn btn-accent" href="#hamta">Hämta appen</a>
+      </div>
+    </div>
+    <span class="hero-scroll caption" aria-hidden="true">Scrolla</span>
+  </section>
+
+  <!-- the demo: the site runs the algorithm -->
+  <section id="karta" aria-labelledby="karta-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">01 · Kartan</span>
+        <h2 id="karta-title">Skriv en ort. Kartan räknar.</h2>
+        <p class="lede">Ingen inloggning. Zonerna beräknas ur terrängen — lutning,
+        markfuktighet, avstånd till väg och bebyggelse, skyddade områden.
+        Just nu: Stockholms län.</p>
+      </div>
+
+      <div class="demo-frame reveal" style="--stagger:1">
+        <div class="demo-toolbar">
+          <input type="text" id="demo-place" list="towns" placeholder="Ort i Stockholms län"
+                 aria-label="Ort i Stockholms län" autocomplete="off" spellcheck="false">
+          <datalist id="towns">
+            <option>Stockholm</option><option>Norrtälje</option><option>Nynäshamn</option>
+            <option>Södertälje</option><option>Vaxholm</option><option>Gustavsberg</option>
+            <option>Åkersberga</option><option>Märsta</option><option>Hallstavik</option>
+            <option>Rimbo</option><option>Dalarö</option><option>Grisslehamn</option>
+          </datalist>
+          <button class="chip" data-filter="tent" aria-pressed="true">Tält</button>
+          <button class="chip" data-filter="rainok" aria-pressed="false">Regn OK</button>
+          <button class="chip" data-filter="water" aria-pressed="false">Nära vatten</button>
+          <button class="chip" id="demo-locate">Min position</button>
+        </div>
+        <div class="demo-stage" id="demo-stage">
+          <canvas id="terrain-canvas" aria-label="Terrängkarta med beräknade zoner" role="img"></canvas>
+          <svg id="zones-svg" aria-label="Beräknade zoner"></svg>
+          <div class="demo-log" id="demo-log" aria-hidden="true"></div>
+          <div class="demo-readout" id="demo-readout" role="status"></div>
+          <div class="demo-empty" id="demo-empty">
+            <div>
+              <p>Ännu inte beräknat här. Täckningen byggs ut län för län —
+              Stockholms län är först.</p>
+              <a class="btn" href="#lan">Säg till när mitt län räknas</a>
+            </div>
+          </div>
+          <span class="demo-attrib">förenklad demoterräng · appen: © Lantmäteriet</span>
+        </div>
+      </div>
+
+      <div class="demo-note reveal" style="--stagger:2">
+        <p class="quiet">Någonstans härinne ser marken användbar ut.</p>
+        <span class="data" id="demo-count" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- the inversion -->
+  <section aria-labelledby="varfor-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">02 · Varför</span>
+        <h2 id="varfor-title">Andra appar visar var alla andra har varit.</h2>
+      </div>
+      <div class="two-col">
+        <div class="reveal" style="--stagger:1">
+          <p>Varje friluftsapp på marknaden är en databas över inskickade platser.
+          Modellen har ett permanent fel: den som hittar en bra plats publicerar
+          den inte. En delad plats slutar vara den plats du delade.</p>
+        </div>
+        <div class="reveal" style="--stagger:2">
+          <p>Ödemark samlar ingenting från någon folkmassa. Kandidatmark beräknas
+          ur officiella svenska geodata. Varje sökning får ett eget svar — två
+          tusen personer skickas aldrig till samma strandhäll.</p>
+          <p class="quiet" style="margin-top:24px">Beräkningen är bara möjlig i länder
+          med allemansrätt. Därför har appen inte funnits förrän nu.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section aria-labelledby="sa-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">03 · Så räknar den</span>
+        <h2 id="sa-title">Deterministisk analys av myndighetsdata.</h2>
+        <p class="lede">Samma indata, samma svar. Appen väger terrängfaktorer mot
+        varandra och ritar zoner där villkoren uppfylls.</p>
+      </div>
+      <div class="sources reveal" style="--stagger:1">
+        <div class="source-row">
+          <span class="data">Lantmäteriet</span>
+          <p>Markhöjdmodell, 2 m-upplösning. Höjd och lutning — grunden för allt.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">Naturvårdsverket · NMD</span>
+          <p>Nationella marktäckedata. Skogstyp, våtmark, öppen mark.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">Skyddad natur</span>
+          <p>Nationalparker, reservat och föreskrifter som begränsar tältning.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">Byggnader och vägar</span>
+          <p>Avstånd till bebyggelse och farbar väg. Hemfridszonen respekteras.</p>
+        </div>
+        <div class="source-row">
+          <span class="data">SMHI</span>
+          <p>Väder som filter, inte som omdöme.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- zones, not pins -->
+  <section aria-labelledby="zoner-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">04 · Zoner, inte nålar</span>
+        <h2 id="zoner-title">Ungefär här. Aldrig exakt där.</h2>
+      </div>
+      <div class="library-grid">
+        <div>
+          <div class="zones-figure" style="margin-top:0">
+            <div class="zone-card reveal" style="--stagger:1">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="22" fill="none" stroke="var(--zone)" stroke-width="2.5" stroke-dasharray="8 7" stroke-linecap="round"/></svg>
+              <span class="caption">Beräknad zon</span>
+              <p>Någonstans i det här området ser marken användbar ut. Appen pekar
+              aldrig på en punkt — den sista kilometern är din.</p>
+            </div>
+            <div class="zone-card reveal" style="--stagger:2">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="7" fill="currentColor"/></svg>
+              <span class="caption">Sparad plats</span>
+              <p>När du väl stått där sparar du platsen exakt — koordinater,
+              anteckning, bild. Den syns bara för dig.</p>
+            </div>
+          </div>
+        </div>
+        <div class="reveal" style="--stagger:3">
+          <img class="phone" src="/img/02-search.png" width="880" height="1913"
+               loading="lazy" decoding="async"
+               alt="Appens sökvy: mörk terrängkarta över Lunsen med tre streckade zoner, filtren Tält, Regn OK och Nära vatten">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the library — the register shifts here -->
+  <section id="library" class="library" aria-labelledby="bib-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">05 · Biblioteket</span>
+        <h2 id="bib-title">Det du hittar är ditt.</h2>
+        <p class="lede">Biblioteket är en anteckningsbok, inte ett flöde. Exakta
+        koordinater, dina bilder, dina ord. Ingen delningsknapp finns att glömma på.</p>
+      </div>
+      <div class="library-grid">
+        <div class="reveal" style="--stagger:1">
+          <div class="spot-card">
+            <img class="photo" src="/img/spot-photo.jpg" width="1200" height="1500"
+                 loading="lazy" decoding="async"
+                 alt="Barrskog med bäck och mossiga stenar">
+            <div class="body">
+              <div class="spot-title"><span class="dot" aria-hidden="true"></span><h3>Hällen norr om Vallsjön</h3></div>
+              <span class="caption only-you">Endast du kan se den här platsen</span>
+              <label class="caption" for="field-note" style="display:none">Fältanteckning</label>
+              <textarea class="spot-note" id="field-note" rows="3"
+                spellcheck="false">Vindskyddad svacka bakom hällen. Ved finns. Kom tillbaka i oktober.</textarea>
+              <dl class="spot-meta">
+                <div><dt>Besök</dt><dd>2 nätter · sep 2026</dd></div>
+                <div><dt>Koordinater</dt><dd>59.8712°N 17.5104°E</dd></div>
+                <div><dt>Höjd</dt><dd>42 m</dd></div>
+              </dl>
+            </div>
+          </div>
+          <p class="caption net-proof">Skriv i anteckningen — den sparas i din webbläsare
+          och skickas ingenstans. Öppna nätverksfliken och se efter.</p>
+        </div>
+        <div class="reveal" style="--stagger:2">
+          <img class="phone" src="/img/07-spot-detail.png" width="880" height="1913"
+               loading="lazy" decoding="async"
+               alt="Appens platsvy: Hällen norr om Vallsjön, endast du kan se den här platsen, anteckning i kursiv serif och exakta koordinater">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- privacy, stated flatly -->
+  <section class="privacy-flat" aria-labelledby="int-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">06 · Integritet</span>
+        <h2 id="int-title">Ingen kan se dina platser. Inte vi heller.</h2>
+      </div>
+      <div class="rows reveal" style="--stagger:1">
+        <div>
+          <span class="data">delning</span>
+          <p>Finns inte. Ingen funktion att råka lämna på.</p>
+        </div>
+        <div>
+          <span class="data">flöde</span>
+          <p>Finns inte. Inga följare, inga markeringar, ingen gemenskap att gå med i.</p>
+        </div>
+        <div>
+          <span class="data">dina platser</span>
+          <p>Sparas krypterade i ditt bibliotek. Inte synliga för andra användare,
+          inte för oss.</p>
+        </div>
+        <div>
+          <span class="data">den här webbplatsen</span>
+          <p>Inga kakor, ingen tredjepartskod, ingen spårning. Därför finns ingen
+          kakbanner. Nätverksfliken bekräftar.</p>
+        </div>
+      </div>
+      <p class="quiet reveal" style="--stagger:2; margin-top:40px">Att dela sin plats är
+      att förlora den. Appen är byggd så att det inte går.</p>
+    </div>
+  </section>
+
+  <!-- ground truth -->
+  <section class="ground-truth" aria-labelledby="mark-title">
+    <div class="backdrop" style="--mist-url:url('/img/mist.jpg')" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">07 · Markkontroll</span>
+        <h2 id="mark-title">Algoritmen väljer. Sedan åker vi dit.</h2>
+        <p class="lede">Ödemark pekar ut en zon grundaren aldrig sett. Han går in,
+        filmar och redovisar utfallet — även när beräkningen har fel.</p>
+      </div>
+      <div class="episodes">
+        <article class="episode reveal" style="--stagger:1">
+          <button class="thumb" data-yt="" data-title="Avsnitt 01 · Lunsen" disabled>( fältfilm — publiceras vid lansering )</button>
+          <h3>Avsnitt 01 · Lunsen</h3>
+          <span class="data">utfall: tältbart · hällmark, torr</span>
+          <span class="data">1,9 km från väg · 2 nätter</span>
+        </article>
+        <article class="episode reveal" style="--stagger:2">
+          <button class="thumb" data-yt="" data-title="Avsnitt 02 · Norrtälje inland" disabled>( fältfilm — publiceras vid lansering )</button>
+          <h3>Avsnitt 02 · Norrtälje inland</h3>
+          <span class="data verdict-bad">utfall: fel — sankmark efter regn</span>
+          <span class="data">modellen justerad: fuktvikt höjd</span>
+        </article>
+        <article class="episode reveal" style="--stagger:3">
+          <button class="thumb" data-yt="" data-title="Avsnitt 03 · Södertörn" disabled>( fältfilm — publiceras vid lansering )</button>
+          <h3>Avsnitt 03 · Södertörn</h3>
+          <span class="data">utfall: tältbart · gles tallskog</span>
+          <span class="data">40 min gång från parkering</span>
+        </article>
+      </div>
+      <p class="caption reveal" style="--stagger:4; margin-top:32px">Felen redovisas öppet.
+      Video laddas först när du klickar — via youtube-nocookie.</p>
+    </div>
+  </section>
+
+  <!-- install -->
+  <section id="hamta" class="install" aria-labelledby="hamta-title">
+    <div class="wrap">
+      <svg class="hero-symbol reveal" viewBox="0 0 64 76" aria-hidden="true">
+        <circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/>
+        <circle cx="23" cy="9" r="5.5" fill="currentColor"/>
+        <circle cx="41" cy="9" r="5.5" fill="currentColor"/>
+      </svg>
+      <h2 id="hamta-title" class="reveal" style="--stagger:1">Ödemark finns för iOS och Android.</h2>
+      <p class="lede reveal" style="--stagger:2">Gratis att hämta. Stockholms län är
+      beräknat; fler län följer.</p>
+      <div class="store-row reveal" style="--stagger:3">
+        <a class="btn btn-accent" href="https://apps.apple.com/se/app/odemark" rel="noopener">App Store</a>
+        <a class="btn btn-accent" href="https://play.google.com/store/apps/details?id=se.odemark.app" rel="noopener">Google Play</a>
+      </div>
+
+      <form id="region-form" class="region-form reveal" style="--stagger:4" data-endpoint="">
+        <label class="caption" id="lan" for="region-email">Annat län? Lämna din e-post
+        så säger vi till när ditt län är räknat.</label>
+        <div class="row">
+          <input type="email" id="region-email" name="email" required
+                 placeholder="namn@exempel.se" autocomplete="email">
+          <button class="btn" type="submit">Anteckna</button>
+        </div>
+        <p class="confirm" role="status">Antecknat. En rad i en lista — inget nyhetsbrev.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <svg viewBox="0 0 64 76" aria-hidden="true"><circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/><circle cx="23" cy="9" r="5.5" fill="currentColor"/><circle cx="41" cy="9" r="5.5" fill="currentColor"/></svg>
+        <span>Ödemark</span>
+      </div>
+      <nav class="foot-links" aria-label="Sidfot">
+        <a href="/allemansratten.html">Allemansrätten</a>
+        <a href="/integritet.html">Integritet</a>
+        <a href="/press.html">Press</a>
+        <a href="/en/" lang="en">English</a>
+      </nav>
+    </div>
+    <div class="foot-meta">
+      <span class="data">© 2026 Ödemark · odemark.se</span>
+      <span class="data">Inga kakor. Ingen spårning. Terrängdata i appen: © Lantmäteriet.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+window.ODEMARK_DEMO_I18N = {
+  log: [
+    "läser höjdmodell (2 m)",
+    "lutning < 15°",
+    "markfuktighet",
+    "avstånd väg > 200 m",
+    "avstånd byggnad > 150 m",
+    "skyddade områden",
+    "allemansrätten"
+  ],
+  grounds: [
+    "torr moränmark · gles tallskog",
+    "hällmark med mossa",
+    "sandig hedmark",
+    "fast mark ovan sankstråk"
+  ],
+  zoneLabel: "zon",
+  zones: "zoner",
+  fromRoad: "från närmaste väg"
+};
+</script>
+<script src="/js/main.js" defer></script>
+<script src="/js/terrain.js" defer></script>
+</body>
+</html>
