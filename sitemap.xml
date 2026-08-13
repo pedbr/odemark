@@ -2,36 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://odemark.se/</loc>
-    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/"/>
+    <loc>https://odemark.app/</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/"/>
   </url>
   <url>
-    <loc>https://odemark.se/en/</loc>
-    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/"/>
+    <loc>https://odemark.app/en/</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/"/>
   </url>
   <url>
-    <loc>https://odemark.se/allemansratten.html</loc>
-    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/allemansratten.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/allemansratten.html"/>
+    <loc>https://odemark.app/allemansratten.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/allemansratten.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/allemansratten.html"/>
   </url>
   <url>
-    <loc>https://odemark.se/en/allemansratten.html</loc>
-    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/allemansratten.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/allemansratten.html"/>
+    <loc>https://odemark.app/en/allemansratten.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/allemansratten.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/allemansratten.html"/>
   </url>
   <url>
-    <loc>https://odemark.se/integritet.html</loc>
-    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/integritet.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/privacy.html"/>
+    <loc>https://odemark.app/integritet.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/integritet.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/privacy.html"/>
   </url>
   <url>
-    <loc>https://odemark.se/en/privacy.html</loc>
-    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.se/integritet.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.se/en/privacy.html"/>
+    <loc>https://odemark.app/en/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/integritet.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/privacy.html"/>
   </url>
   <url>
-    <loc>https://odemark.se/press.html</loc>
+    <loc>https://odemark.app/sparlost.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/sparlost.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/leave-no-trace.html"/>
+  </url>
+  <url>
+    <loc>https://odemark.app/en/leave-no-trace.html</loc>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://odemark.app/sparlost.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://odemark.app/en/leave-no-trace.html"/>
+  </url>
+  <url>
+    <loc>https://odemark.app/press.html</loc>
   </url>
 </urlset>

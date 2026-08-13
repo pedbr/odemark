@@ -16,7 +16,6 @@
   var readout = document.getElementById("demo-readout");
   var emptyEl = document.getElementById("demo-empty");
   var input = document.getElementById("demo-place");
-  var locBtn = document.getElementById("demo-locate");
   var chips = Array.prototype.slice.call(document.querySelectorAll(".chip[data-filter]"));
   var countEl = document.getElementById("demo-count");
 
@@ -278,26 +277,137 @@
     return d + "Z";
   }
 
-  function computeZones(filters) {
-    var field = blur(suitability(filters));
-    // threshold at a percentile of viable ground — zone area stays honest
+  /* One canonical zone set per town. Every zone carries fixed, deterministic
+     attributes (travel time, road/building distance, wetness, water, tent
+     suitability); the filters then show or hide members of that set. So
+     loosening a condition can only reveal zones, tightening can only hide
+     them — the same contract as the app. */
+
+  function computeAllZones() {
+    // generous neutral pass — the full candidate set, with a shoreline bonus
+    // so lakeside ground competes the way it does in the real analysis
+    var raw = suitability({ tent: false, rainok: true, water: false });
+    for (var gy = 0; gy < GRID_H; gy++) {
+      for (var gx = 0; gx < GRID_W; gx++) {
+        var gi = gy * GRID_W + gx;
+        if (gx > 6 && gy > 5 && gx < GRID_W - 7 && gy < GRID_H - 6) {
+          var dwB = distToWater(gx, gy);
+          if (dwB >= 2 && dwB <= 3) {
+            // shores are steeper in this terrain; judge them by a gentler
+            // slope bar or no lakeside blob ever survives
+            var shore = Math.max(0, 1 - slopeAt(gx, gy) / 0.1) * 0.95;
+            raw[gi] = Math.min(1, Math.max(raw[gi] * 2, shore));
+          }
+        }
+      }
+    }
+    var field = blur(raw);
     var vals = [];
     for (var i = 0; i < field.length; i++) if (field[i] > 0.05) vals.push(field[i]);
-    if (!vals.length) return [];
+    if (!vals.length) { zones = []; return; }
     vals.sort(function (a, b) { return a - b; });
-    var thr = vals[Math.floor(vals.length * 0.8)];
-    var paths = marchingSquares(field, thr), tries = 0;
-    while (paths.length > 4 && tries < 5) {
-      thr = thr + (vals[vals.length - 1] - thr) * 0.25;
-      paths = marchingSquares(field, thr);
-      tries++;
+    // walk the threshold down until the map holds a usable set of zones
+    var pcts = [0.86, 0.8, 0.74, 0.68], paths = [];
+    for (var t = 0; t < pcts.length; t++) {
+      paths = marchingSquares(field, vals[Math.floor(vals.length * pcts[t])])
+        .filter(function (p) { return p.length > 14; });
+      if (paths.length >= 4) break;
     }
+    var thr = vals[Math.floor(vals.length * pcts[Math.min(t, pcts.length - 1)])];
     paths.sort(function (a, b) { return b.length - a.length; });
-    paths = paths.slice(0, 4);
-    return paths.map(function (p, i) {
-      var meta = blobArea(field, thr, p);
-      return { d: smoothPath(p), meta: meta, idx: i };
-    }).filter(function (z) { return z.meta.cells >= 24; });
+    zones = paths.slice(0, 6).map(function (path, i) {
+      var meta = blobArea(field, thr, path);
+      return { path: path, meta: meta, idx: i, attrs: zoneAttrs(i, meta, path) };
+    }).filter(function (z) { return z.meta.cells >= 10; });
+
+    /* curated roles so every control demonstrably does something:
+       zone 0 — flagship, survives every default
+       zone 1 — near water, survives defaults (the "Near water" answer)
+       zone 2 — waterlogs in rain (appears only with "Rain OK")
+       zone 3 — too uneven for a tent (appears when "Tent" is off) */
+    function passDefaults(a) {
+      // survives the default selects, but stays inside the mid tiers so the
+      // stricter setbacks still have zones to hide
+      a.travelMin = Math.min(a.travelMin, 40);
+      a.roadM = 600 + (a.roadM % 350);    // 600–949: hidden at "≥ 1 km"
+      a.bldM = 400 + (a.bldM % 300);      // 400–699: partly hidden at "≥ 500 m"
+    }
+    if (zones.length) {
+      var a0 = zones[0].attrs;
+      a0.tentOk = true; a0.wetRisk = false; passDefaults(a0);
+      a0.roadM = Math.max(a0.roadM, 1100); a0.bldM = Math.max(a0.bldM, 520);
+    }
+
+    // the water answer must be a zone that genuinely lies by water: take the
+    // one closest to shore and make sure it survives the defaults
+    var waterZ = null;
+    zones.forEach(function (z) {
+      if (!waterZ || z.attrs.wDist < waterZ.attrs.wDist) waterZ = z;
+    });
+    if (waterZ && waterZ.attrs.wDist <= 5) {
+      var aw = waterZ.attrs;
+      aw.nearWater = true;
+      aw.waterM = Math.max(60, aw.wDist * 126);
+      if (waterZ !== zones[0]) { aw.tentOk = true; aw.wetRisk = false; passDefaults(aw); }
+    } else {
+      waterZ = null; // nothing genuinely by water — no zone claims it
+    }
+
+    // remaining roles land on zones not already spoken for
+    var rest = zones.filter(function (z) { return z !== zones[0] && z !== waterZ; });
+    if (rest[0]) { // waterlogs in rain — appears only with "Rain OK"
+      var a2 = rest[0].attrs;
+      a2.tentOk = true; a2.wetRisk = true; passDefaults(a2);
+    }
+    if (rest[1]) { // too uneven for a tent — appears when "Tent" is off
+      var a3 = rest[1].attrs;
+      a3.tentOk = false; a3.wetRisk = false; passDefaults(a3);
+    }
+    if (rest[2]) { // remote — appears when the radius widens to 90 min
+      var a4 = rest[2].attrs;
+      a4.tentOk = true; a4.wetRisk = false; passDefaults(a4);
+      a4.travelMin = 55 + (a4.travelMin % 30);
+    }
+  }
+
+  function zoneAttrs(i, meta, path) {
+    var rnd = mulberry(hash(seedName.toLowerCase()) ^ (i * 2654435761));
+    var cx = Math.round(meta.cx), cy = Math.round(meta.cy);
+    // true water distance: nearest water from any point on the zone's edge
+    var wDist = distToWater(cx, cy);
+    for (var s = 0; s < path.length; s += 3) {
+      var d = distToWater(path[s][0], path[s][1]);
+      if (d < wDist) wDist = d;
+    }
+    var elevLo = 15 + Math.round(rnd() * 40);
+    var grounds = I18N.grounds || [];
+    return {
+      travelMin: 22 + Math.round(rnd() * 50),      // 22–72 min from town
+      roadM: 300 + Math.round(rnd() * 1400),       // distance to nearest road
+      bldM: 200 + Math.round(rnd() * 700),         // distance to nearest building
+      wetRisk: wet[cy * GRID_W + cx] > 0.5,        // waterlogs in rain
+      wDist: wDist,
+      nearWater: wDist <= 4,                       // the zone actually touches shore country
+      waterM: Math.max(60, Math.round(wDist * 126 + rnd() * 60)),
+      tentOk: rnd() > 0.3,                         // flat enough for a tent
+      slope: 2 + Math.round(rnd() * 4),
+      elevLo: elevLo,
+      elevHi: elevLo + 8 + Math.round(rnd() * 30),
+      ground: grounds[Math.floor(rnd() * grounds.length)] || ""
+    };
+  }
+
+  function visibleZones() {
+    var f = filtersNow(), p = paramsNow();
+    return zones.filter(function (z) {
+      var a = z.attrs;
+      return (!f.tent || a.tentOk) &&
+             (f.rainok || !a.wetRisk) &&
+             (!f.water || a.nearWater) &&
+             a.travelMin <= p.travel &&
+             a.roadM >= p.road &&
+             a.bldM >= p.building;
+    });
   }
 
   // ——— UI ———
@@ -308,25 +418,43 @@
     return f;
   }
 
+  function paramsNow() { // the user's conditions: travel radius, road/building setback
+    function val(id, d) {
+      var el = document.getElementById(id);
+      return el ? parseInt(el.value, 10) : d;
+    }
+    return { travel: val("demo-travel", 45), road: val("demo-road", 200), building: val("demo-building", 150) };
+  }
+
   function fmtCoord(cx, cy) {
     var lat = BBOX.n - (cy / GRID_H) * (BBOX.n - BBOX.s);
     var lon = BBOX.w + (cx / GRID_W) * (BBOX.e - BBOX.w);
     return lat.toFixed(2) + "°N " + lon.toFixed(2) + "°E";
   }
 
+  function fmtM(m) { return m >= 1000 ? (m / 1000).toFixed(1) + " km" : m + " m"; }
+
   function showReadout(z) {
-    var rnd = mulberry(hash(seedName) ^ (z.idx * 7919 + 13));
+    var a = z.attrs;
     var ha = Math.round(z.meta.cells * CELL_HA);
-    var elevLo = 15 + Math.round(rnd() * 40), elevHi = elevLo + 8 + Math.round(rnd() * 30);
-    var walk = (0.8 + rnd() * 2.6).toFixed(1);
-    var grounds = I18N.grounds || [];
-    var ground = grounds[Math.floor(rnd() * grounds.length)] || "";
+    var L = I18N.labels || {};
+    function row(k, v) {
+      return '<div class="rr"><span>' + k + '</span><span>' + v + "</span></div>";
+    }
     readout.innerHTML =
-      '<span class="caption">' + (I18N.zoneLabel || "zon") + " " + String.fromCharCode(65 + z.idx) + "</span>" +
-      "~" + ha + " ha · " + elevLo + "–" + elevHi + " m<br>" +
-      ground + "<br>" +
-      walk + " km " + (I18N.fromRoad || "") + "<br>" +
-      fmtCoord(z.meta.cx, z.meta.cy);
+      '<button class="rclose" aria-label="' + (I18N.close || "Close") + '">×</button>' +
+      '<span class="caption">' + (I18N.zoneLabel || "zon") + " " +
+      String.fromCharCode(65 + z.idx) + " · ~" + ha + " ha · " + a.elevLo + "–" + a.elevHi + " m</span>" +
+      row(L.ground || "", a.ground) +
+      row(L.slope || "", "≤ " + a.slope + "°") +
+      row(L.travel || "", "≈ " + a.travelMin + " min") +
+      row(L.road || "", fmtM(a.roadM)) +
+      row(L.building || "", fmtM(a.bldM)) +
+      row(L.water || "", fmtM(a.waterM)) +
+      row(L.coords || "", fmtCoord(z.meta.cx, z.meta.cy));
+    readout.querySelector(".rclose").addEventListener("click", function () {
+      readout.classList.remove("show");
+    });
     readout.classList.add("show");
   }
 
@@ -359,7 +487,7 @@
     svg.setAttribute("viewBox", "0 0 " + stage.clientWidth + " " + stage.clientHeight);
     list.forEach(function (z) {
       var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      p.setAttribute("d", z.d);
+      p.setAttribute("d", smoothPath(z.path));
       p.setAttribute("tabindex", "0");
       p.setAttribute("role", "button");
       p.setAttribute("aria-label", (I18N.zoneLabel || "zon") + " " + String.fromCharCode(65 + z.idx));
@@ -389,17 +517,18 @@
     svg.classList.remove("zones-in");
     svg.innerHTML = "";
     if (countEl) countEl.textContent = "…";
+    computeAllZones();
     runLog(I18N.log || [], function () {
-      drawZones(computeZones(filtersNow()));
+      drawZones(visibleZones());
       running = false;
     });
   }
 
-  function recompute() { // filter change: no full log, zones fade out/in
+  function recompute() { // filter change: same zone set, membership updates
     if (running || !elev) return;
     readout.classList.remove("show");
     svg.classList.remove("zones-in");
-    var list = computeZones(filtersNow());
+    var list = visibleZones();
     setTimeout(function () { drawZones(list); }, reduced ? 0 : 420);
   }
 
@@ -431,22 +560,10 @@
     });
   });
 
-  if (locBtn) {
-    locBtn.addEventListener("click", function () {
-      if (!navigator.geolocation) return;
-      locBtn.disabled = true;
-      navigator.geolocation.getCurrentPosition(function (pos) {
-        locBtn.disabled = false;
-        var la = pos.coords.latitude, lo = pos.coords.longitude;
-        if (la >= BBOX.s && la <= BBOX.n && lo >= BBOX.w && lo <= BBOX.e) {
-          input.value = "";
-          compute(la.toFixed(2) + "," + lo.toFixed(2));
-        } else {
-          emptyEl.classList.add("show");
-        }
-      }, function () { locBtn.disabled = false; });
-    });
-  }
+  ["demo-travel", "demo-road", "demo-building"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener("change", recompute);
+  });
 
   var resizeT;
   window.addEventListener("resize", function () {
@@ -454,9 +571,18 @@
     resizeT = setTimeout(function () {
       if (!elev) return;
       render();
-      drawZones(computeZones(filtersNow()));
+      drawZones(visibleZones());
     }, 200);
   });
+
+  // debug handle (harmless in production; no PII, deterministic data only)
+  Object.defineProperty(window, "__odemarkZones", { get: function () { return zones; } });
+  window.__odemarkDebug = {
+    GRID_W: GRID_W, GRID_H: GRID_H, WATER: WATER,
+    get elev() { return elev; },
+    distToWater: distToWater,
+    version: 3
+  };
 
   // lazy start when the demo scrolls into view
   var started = false;

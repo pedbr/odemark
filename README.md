@@ -1,4 +1,4 @@
-# Ödemark — odemark.se
+# Ödemark — odemark.app
 
 Static site. No framework, no build step, no third-party requests of any kind.
 This repository *is* the site: `index.html` sits at the root and every asset
@@ -46,7 +46,7 @@ Two headers are load-bearing and easy to break:
   Nothing else is permitted — that restriction is the privacy promise in
   enforceable form, so tighten it rather than loosen it.
 
-Custom domains: `odemark.se` canonical, `ödemark.se` (`xn--demark-hva.se`)
+Custom domains: `odemark.app` canonical, `ödemark.app` (`xn--demark-hva.app`)
 301 to it. All `<link rel="canonical">` tags already point at the ASCII host.
 
 ## The map demo
@@ -80,6 +80,21 @@ Lantmäteriet data ships, change the attribution string in both homepages from
 - **The field-note demo** persists to `localStorage` only — that is the point;
   do not wire it to anything.
 
+## Hero video
+
+The hero expects ambient forest footage at `img/hero.mp4`. Until that file
+exists, the page automatically falls back to slow-crossfading stills
+(`img/mist.jpg`, `hero-2.jpg`, `hero-3.jpg`) — no code change involved in
+either direction, just add or remove the file.
+
+When exporting the real clip: H.264 mp4, 1600 px wide is plenty behind the
+scrim, **no audio track**, 10–20 s seamless loop, target under ~3 MB
+(two-pass, CRF ≈ 28 works). Keep `img/mist.jpg` as the poster or replace it
+with the clip's first frame. Slow, near-static footage suits the brand and
+compresses far better than movement. `prefers-reduced-motion` visitors never
+get the video — the static still serves instead; that behaviour is deliberate
+(motion charter).
+
 ## To fill in before launch
 
 - App Store / Google Play URLs (`#hamta` / `#get` sections) + smart-banner
@@ -89,7 +104,7 @@ Lantmäteriet data ships, change the attribution string in both homepages from
 - Region-list endpoint: `data-endpoint` on `#region-form` (expects a JSON
   POST `{email, lang}`). Buttondown, a worker, or the app backend.
 - Org number in `integritet.html` / `en/privacy.html`.
-- `press@odemark.se`, `hej@odemark.se` mailboxes.
+- `press@odemark.app`, `hej@odemark.app` mailboxes.
 
 ## CMS note
 

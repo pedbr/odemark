@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy | Ödemark</title>
 <meta name="description" content="Ödemark's privacy policy. No cookies, no third-party tracking. Your saved places are encrypted and visible to no one else.">
-<link rel="canonical" href="https://odemark.se/en/privacy.html">
-<link rel="alternate" hreflang="sv" href="https://odemark.se/integritet.html">
-<link rel="alternate" hreflang="en" href="https://odemark.se/en/privacy.html">
+<link rel="canonical" href="https://odemark.app/en/privacy.html">
+<link rel="alternate" hreflang="sv" href="https://odemark.app/integritet.html">
+<link rel="alternate" hreflang="en" href="https://odemark.app/en/privacy.html">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0B0F13">
 <link rel="icon" href="/img/odemark-app-icon.png">
@@ -23,8 +23,17 @@
       <svg viewBox="0 0 64 76" aria-hidden="true"><circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/><circle cx="23" cy="9" r="5.5" fill="currentColor"/><circle cx="41" cy="9" r="5.5" fill="currentColor"/></svg>
       <span>Ödemark</span>
     </a>
-    <a class="nav-link" href="/integritet.html" lang="sv">Svenska</a>
+    <nav class="nav-links" id="nav-menu" aria-label="Main menu">
+      <a class="nav-link" href="/en/allemansratten.html">Allemansrätten</a>
+      <a class="nav-link" href="/en/leave-no-trace.html">Leave no trace</a>
+      <a class="nav-link" href="/en/privacy.html" aria-current="page">Privacy</a>
+      <a class="nav-link" href="/integritet.html" lang="sv">Svenska</a>
+    </nav>
     <a class="nav-cta" href="/en/#get">Get the app</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Menu">
+      <svg class="i-open" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="7" x2="17" y2="7"/><line x1="3" y1="13" x2="17" y2="13"/></g></svg>
+      <svg class="i-close" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="15" y2="15"/><line x1="15" y1="5" x2="5" y2="15"/></g></svg>
+    </button>
   </div>
 </header>
 
@@ -55,11 +64,11 @@
 
     <h2>Your rights</h2>
     <p>GDPR applies. You can request access, correction and deletion via
-    hej@odemark.se. Deleting your account deletes the library permanently — we
+    hej@odemark.app. Deleting your account deletes the library permanently — we
     cannot restore it, because we cannot read it.</p>
 
     <span class="caption">Controller</span>
-    <p class="muted">Ödemark AB · Stockholm · hej@odemark.se ·
+    <p class="muted">Ödemark AB · Stockholm · hej@odemark.app ·
     company reg. no. added at registration.</p>
   </div>
 </main>
@@ -74,15 +83,17 @@
       <nav class="foot-links" aria-label="Footer">
         <a href="/en/">Home</a>
         <a href="/en/allemansratten.html">Allemansrätten</a>
+        <a href="/en/leave-no-trace.html">Leave no trace</a>
         <a href="/press.html">Press</a>
         <a href="/integritet.html" lang="sv">Svenska</a>
       </nav>
     </div>
     <div class="foot-meta">
-      <span class="data">© 2026 Ödemark · odemark.se</span>
+      <span class="data">© 2026 Ödemark · odemark.app</span>
       <span class="data">No cookies. No tracking.</span>
     </div>
   </div>
 </footer>
+<script src="/js/main.js" defer></script>
 </body>
 </html>

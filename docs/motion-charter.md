@@ -17,7 +17,7 @@ parallaxes. The site never scrolls for you.
 | Durations | 200–400 ms | 200–400 ms for UI; up to **1600 ms** for whole-surface crossfades (the register shift, hero arrival) |
 | Easing | cubic-bezier(0.2, 0, 0, 1) | unchanged |
 | Movement | opacity + ≤ 4 px drift | unchanged — 4 px is still the ceiling |
-| Scale, rotation, parallax | never | never |
+| Scale, rotation, parallax | never | never for interface content. **One exception, founder-approved (Aug 2026):** the hero's background media layer drifts scale 1.02→1.16 over 32 s (ease-in-out, alternate) as a footage surrogate — a drone-shot feel. Text, symbols and UI above the scrim never scale. Removed entirely under prefers-reduced-motion. |
 | Scroll behaviour | — | native scroll only; no hijacking, no snap between sections |
 | Ring draw-in | 400 ms, cold start only | 400 ms, once per page load, hero only |
 | Zones (demo map) | fade in once, together | unchanged — a survey result, not a reveal |

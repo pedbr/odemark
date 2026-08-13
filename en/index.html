@@ -5,22 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ödemark — computed camping ground. Ingen har varit här.</title>
 <meta name="description" content="Ödemark computes unfound camping ground from official Swedish geodata, under the rules of allemansrätten. Zones, never pins. The places you find stay private.">
-<link rel="canonical" href="https://odemark.se/en/">
-<link rel="alternate" hreflang="sv" href="https://odemark.se/">
-<link rel="alternate" hreflang="en" href="https://odemark.se/en/">
-<link rel="alternate" hreflang="x-default" href="https://odemark.se/en/">
+<link rel="canonical" href="https://odemark.app/en/">
+<link rel="alternate" hreflang="sv" href="https://odemark.app/">
+<link rel="alternate" hreflang="en" href="https://odemark.app/en/">
+<link rel="alternate" hreflang="x-default" href="https://odemark.app/en/">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0B0F13">
 <meta property="og:title" content="Ödemark — Ingen har varit här">
 <meta property="og:description" content="Computed camping ground from public geodata. Zones, never pins. Private, permanently.">
-<meta property="og:image" content="https://odemark.se/img/og.png">
+<meta property="og:image" content="https://odemark.app/img/og.png">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://odemark.se/en/">
+<meta property="og:url" content="https://odemark.app/en/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/img/odemark-app-icon.png">
 <link rel="apple-touch-icon" href="/img/odemark-app-icon.png">
 <!-- app store smart banner — real app id at launch -->
 <!-- <meta name="apple-itunes-app" content="app-id=XXXXXXXXX"> -->
+<link rel="preload" href="/img/mist.jpg" as="image">
 <link rel="preload" href="/fonts/schibsted-grotesk-500-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/newsreader-400-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,45 +37,61 @@
       <svg viewBox="0 0 64 76" aria-hidden="true"><circle cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/><circle cx="23" cy="9" r="5.5" fill="currentColor"/><circle cx="41" cy="9" r="5.5" fill="currentColor"/></svg>
       <span>Ödemark</span>
     </a>
-    <a class="nav-link nav-optional" href="/en/allemansratten.html">Allemansrätten</a>
-    <a class="nav-link nav-optional" href="/en/privacy.html">Privacy</a>
-    <a class="nav-link" href="/" lang="sv">Svenska</a>
+    <nav class="nav-links" id="nav-menu" aria-label="Main menu">
+      <a class="nav-link" href="/en/allemansratten.html">Allemansrätten</a>
+      <a class="nav-link" href="/en/leave-no-trace.html">Leave no trace</a>
+      <a class="nav-link" href="/en/privacy.html">Privacy</a>
+      <a class="nav-link" href="/" lang="sv">Svenska</a>
+    </nav>
     <a class="nav-cta" href="#get">Get the app</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Menu">
+      <svg class="i-open" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="7" x2="17" y2="7"/><line x1="3" y1="13" x2="17" y2="13"/></g></svg>
+      <svg class="i-close" viewBox="0 0 20 20" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="15" y2="15"/><line x1="15" y1="5" x2="5" y2="15"/></g></svg>
+    </button>
   </div>
 </header>
 
 <main id="main">
 
-  <!-- arrival: nearly nothing -->
-  <section class="hero" aria-labelledby="hero-title">
-    <div>
-      <svg class="hero-symbol" viewBox="0 0 64 76" aria-hidden="true">
-        <circle class="ring" cx="32" cy="47" r="23" fill="none" stroke="currentColor" stroke-width="4.5" stroke-dasharray="8.5 7.5" stroke-linecap="round"/>
-        <circle cx="23" cy="9" r="5.5" fill="currentColor"/>
-        <circle cx="41" cy="9" r="5.5" fill="currentColor"/>
-      </svg>
-      <h1 id="hero-title" class="display">Ödemark</h1>
-      <p class="tagline" lang="sv">— Ingen har varit här —</p>
-      <p class="hero-line">Ödemark computes unfound camping ground from official
-      Swedish geodata, under the rules of allemansrätten. Zones, never pins.
-      The places you find stay private.</p>
-      <div class="hero-grammar" role="img"
-           aria-label="Public geodata becomes computed zones, which become your private library">
-        <span class="g-item">
-          <svg viewBox="0 0 26 26" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="8" x2="22" y2="8"/><line x1="4" y1="13" x2="18" y2="13"/><line x1="4" y1="18" x2="21" y2="18"/></g></svg>
-          <span class="caption">Public geodata</span>
-        </span>
-        <span class="g-arrow" aria-hidden="true">→</span>
-        <span class="g-item">
-          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="9" fill="none" stroke="var(--zone)" stroke-width="1.8" stroke-dasharray="4 3.4" stroke-linecap="round"/></svg>
-          <span class="caption">Computed zones</span>
-        </span>
-        <span class="g-arrow" aria-hidden="true">→</span>
-        <span class="g-item">
-          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="4.5" fill="currentColor"/></svg>
-          <span class="caption">Your private library</span>
-        </span>
+  <!-- arrival -->
+  <section class="hero has-media" aria-labelledby="hero-title">
+    <div class="hero-media" aria-hidden="true">
+      <video id="hero-video" muted autoplay loop playsinline
+             preload="metadata" poster="/img/mist.jpg" disablepictureinpicture>
+        <source src="/img/hero.mp4" type="video/mp4">
+      </video>
+      <div class="hero-still" style="background-image:url('/img/mist.jpg')"></div>
+      <div class="hero-still" style="background-image:url('/img/hero-2.jpg')"></div>
+      <div class="hero-still" style="background-image:url('/img/hero-3.jpg')"></div>
+      <div class="hero-scrim"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-split">
+        <h1 id="hero-title" class="hero-title">Camping ground of your own, far from everyone else.</h1>
+        <div class="hero-divider" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <p class="hero-inversion">
+            <span class="inv-others">Every other app shows you where everyone else went.</span>
+            <span class="inv-us">Ödemark shows you where nobody has been.</span>
+          </p>
+          <p class="hero-line">Zones computed from public geodata — matched to your
+          conditions. The places you save stay private.</p>
+        </div>
       </div>
+      <ul class="hero-grammar" aria-label="What the computation guarantees">
+        <li class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"><circle cx="5" cy="13" r="1.6" fill="currentColor" stroke="none"/><line x1="9" y1="13" x2="12" y2="13"/><line x1="15" y1="13" x2="16" y2="13"/><circle cx="21" cy="13" r="2.6"/></g></svg>
+          <span class="caption">Far from buildings</span>
+        </li>
+        <li class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="4 3.4" stroke-linecap="round"/></svg>
+          <span class="caption">Legal under allemansrätten</span>
+        </li>
+        <li class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="9" x2="21" y2="9"/><line x1="8" y1="13.5" x2="18" y2="13.5"/><line x1="11" y1="18" x2="15" y2="18"/></g></svg>
+          <span class="caption">Water, weather, shelter</span>
+        </li>
+      </ul>
       <div class="hero-actions">
         <a class="btn" href="#map">Watch the map compute</a>
         <a class="btn btn-accent" href="#get">Get the app</a>
@@ -88,11 +105,12 @@
     <div class="wrap">
       <div class="section-head reveal">
         <span class="caption">01 · The map</span>
-        <h2 id="map-title">Type a town. The map computes.</h2>
-        <p class="lede">A simplified preview of the app's computation, right in the
-        browser — no signup. Zones are computed from the terrain the same way the
-        app does it: slope, ground wetness, distance to roads and buildings,
-        protected areas. The app does this on real terrain. Currently: Stockholms län.</p>
+        <h2 id="map-title">You set the conditions. The map computes.</h2>
+        <p class="lede">The town is only the starting point. Choose how far you
+        are willing to travel, how far from roads and buildings you want to lie,
+        and what conditions you are after — zones are computed from your terms.
+        A simplified preview of the app's computation, right in the browser; the
+        app does the same on real terrain. Currently: Stockholms län.</p>
       </div>
 
       <div class="demo-frame reveal" style="--stagger:1">
@@ -109,10 +127,24 @@
             <option>Åkersberga</option><option>Märsta</option><option>Hallstavik</option>
             <option>Rimbo</option><option>Dalarö</option><option>Grisslehamn</option>
           </datalist>
+          <select class="chip-select" id="demo-travel" aria-label="Travel time from town">
+            <option value="30">≤ 30 min from town</option>
+            <option value="45" selected>≤ 45 min from town</option>
+            <option value="90">≤ 90 min from town</option>
+          </select>
+          <select class="chip-select" id="demo-road" aria-label="Minimum distance to road">
+            <option value="200" selected>≥ 200 m from road</option>
+            <option value="500">≥ 500 m from road</option>
+            <option value="1000">≥ 1 km from road</option>
+          </select>
+          <select class="chip-select" id="demo-building" aria-label="Minimum distance to building">
+            <option value="150" selected>≥ 150 m from building</option>
+            <option value="300">≥ 300 m from building</option>
+            <option value="500">≥ 500 m from building</option>
+          </select>
           <button class="chip" data-filter="tent" aria-pressed="true">Tent</button>
           <button class="chip" data-filter="rainok" aria-pressed="false">Rain OK</button>
           <button class="chip" data-filter="water" aria-pressed="false">Near water</button>
-          <button class="chip" id="demo-locate">My position</button>
         </div>
         <div class="demo-stage" id="demo-stage">
           <canvas id="terrain-canvas" aria-label="Terrain map with computed zones" role="img"></canvas>
@@ -141,7 +173,7 @@
     <div class="wrap">
       <div class="section-head reveal">
         <span class="caption">02 · Why</span>
-        <h2 id="why-title">Every other app shows you where everyone else went.</h2>
+        <h2 id="why-title">No database of spots. No crowd.</h2>
       </div>
       <div class="two-col">
         <div class="reveal" style="--stagger:1">
@@ -337,6 +369,31 @@
     </div>
   </section>
 
+  <!-- leave no trace -->
+  <section aria-labelledby="lnt-title">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="caption">08 · Leave no trace</span>
+        <h2 id="lnt-title">Nobody should see you were there.</h2>
+        <p class="lede">The app sends you to ground without human traces. That
+        only works if every visit leaves it unchanged. Seven principles, built
+        on Leave No Trace and adapted to Swedish terrain.</p>
+      </div>
+      <ol class="factor-list reveal" style="--stagger:1">
+        <li><span>01 · plan at home</span><span>weather, fire bans, a fallback</span></li>
+        <li><span>02 · camp on durable ground</span><span>rock slab and needle-mat — never lichen</span></li>
+        <li><span>03 · carry everything out</span><span>the organic too</span></li>
+        <li><span>04 · leave what you find</span><span>no cairns, no structures</span></li>
+        <li><span>05 · fire with care</span><span>stove first · never on rock slab</span></li>
+        <li><span>06 · respect the wildlife</span><span>distance · dogs leashed in nesting season</span></li>
+        <li><span>07 · be considerate</span><span>of camps, landowners — and the place</span></li>
+      </ol>
+      <p class="reveal" style="--stagger:2; margin-top:40px">
+        <a class="btn" href="/en/leave-no-trace.html">Read the full page — leave no trace</a>
+      </p>
+    </div>
+  </section>
+
   <!-- install -->
   <section id="get" class="install" aria-labelledby="get-title">
     <div class="wrap">
@@ -377,13 +434,14 @@
       </div>
       <nav class="foot-links" aria-label="Footer">
         <a href="/en/allemansratten.html">Allemansrätten</a>
+        <a href="/en/leave-no-trace.html">Leave no trace</a>
         <a href="/en/privacy.html">Privacy</a>
         <a href="/press.html">Press</a>
         <a href="/" lang="sv">Svenska</a>
       </nav>
     </div>
     <div class="foot-meta">
-      <span class="data">© 2026 Ödemark · odemark.se</span>
+      <span class="data">© 2026 Ödemark · odemark.app</span>
       <span class="data">No cookies. No tracking. Terrain data in the app: © Lantmäteriet.</span>
     </div>
   </div>
@@ -408,10 +466,13 @@ window.ODEMARK_DEMO_I18N = {
   ],
   zoneLabel: "zone",
   zones: "zones",
-  fromRoad: "from nearest road"
+  fromRoad: "from nearest road",
+  labels: { ground: "ground", slope: "slope", travel: "travel", road: "road",
+            building: "building", water: "water", coords: "position" },
+  close: "Close"
 };
 </script>
-<script src="/js/main.js" defer></script>
-<script src="/js/terrain.js" defer></script>
+<script src="/js/main.js?v=2" defer></script>
+<script src="/js/terrain.js?v=3" defer></script>
 </body>
 </html>
