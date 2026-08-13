@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "odemark",
+  "compatibility_date": "2026-08-13",
+  "assets": {
+    // Repo root is the site itself — index.html sits beside this file.
+    // Files listed in .assetsignore are not uploaded or served.
+    "directory": ".",
+    "not_found_handling": "404-page"
+  }
+}

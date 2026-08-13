@@ -1,0 +1,6 @@
+# Not part of the public site — repo-only files.
+wrangler.jsonc
+.assetsignore
+.gitignore
+README.md
+docs/
