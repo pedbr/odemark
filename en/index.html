@@ -58,6 +58,23 @@
       <p class="hero-line">Ödemark computes unfound camping ground from official
       Swedish geodata, under the rules of allemansrätten. Zones, never pins.
       The places you find stay private.</p>
+      <div class="hero-grammar" role="img"
+           aria-label="Public geodata becomes computed zones, which become your private library">
+        <span class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="8" x2="22" y2="8"/><line x1="4" y1="13" x2="18" y2="13"/><line x1="4" y1="18" x2="21" y2="18"/></g></svg>
+          <span class="caption">Public geodata</span>
+        </span>
+        <span class="g-arrow" aria-hidden="true">→</span>
+        <span class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="9" fill="none" stroke="var(--zone)" stroke-width="1.8" stroke-dasharray="4 3.4" stroke-linecap="round"/></svg>
+          <span class="caption">Computed zones</span>
+        </span>
+        <span class="g-arrow" aria-hidden="true">→</span>
+        <span class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="4.5" fill="currentColor"/></svg>
+          <span class="caption">Your private library</span>
+        </span>
+      </div>
       <div class="hero-actions">
         <a class="btn" href="#map">Watch the map compute</a>
         <a class="btn btn-accent" href="#get">Get the app</a>
@@ -72,12 +89,17 @@
       <div class="section-head reveal">
         <span class="caption">01 · The map</span>
         <h2 id="map-title">Type a town. The map computes.</h2>
-        <p class="lede">No signup. Zones are computed from the terrain — slope,
-        ground wetness, distance to roads and buildings, protected areas.
-        Currently: Stockholms län.</p>
+        <p class="lede">A simplified preview of the app's computation, right in the
+        browser — no signup. Zones are computed from the terrain the same way the
+        app does it: slope, ground wetness, distance to roads and buildings,
+        protected areas. The app does this on real terrain. Currently: Stockholms län.</p>
       </div>
 
       <div class="demo-frame reveal" style="--stagger:1">
+        <div class="demo-head">
+          <span class="caption">Web demo — simplified terrain</span>
+          <span class="caption">The app computes on real data · © Lantmäteriet</span>
+        </div>
         <div class="demo-toolbar">
           <input type="text" id="demo-place" list="towns" placeholder="Town in Stockholms län"
                  aria-label="Town in Stockholms län" autocomplete="off" spellcheck="false">
@@ -104,7 +126,6 @@
               <a class="btn" href="#region">Tell me when my region is computed</a>
             </div>
           </div>
-          <span class="demo-attrib">simplified demo terrain · the app: © Lantmäteriet</span>
         </div>
       </div>
 
@@ -278,38 +299,41 @@
     </div>
   </section>
 
-  <!-- ground truth -->
-  <section class="ground-truth" aria-labelledby="ground-title">
+  <!-- the data's limits -->
+  <section class="ground-truth privacy-flat" aria-labelledby="ground-title">
     <div class="backdrop" style="--mist-url:url('/img/mist.jpg')" aria-hidden="true"></div>
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="caption">07 · Ground truth</span>
-        <h2 id="ground-title">The algorithm chooses. Then we go there.</h2>
-        <p class="lede">Ödemark picks a zone the founder has never seen. He walks in,
-        films, and reports the outcome — including when the computation is wrong.</p>
+        <span class="caption">07 · Caveats</span>
+        <h2 id="ground-title">The map is a computation. The ground is real.</h2>
+        <p class="lede">Zones are suggestions derived from data and your filters —
+        not promises. The app points out where it looks worth walking in. You
+        decide on the ground.</p>
       </div>
-      <div class="episodes">
-        <article class="episode reveal" style="--stagger:1">
-          <button class="thumb" data-yt="" data-title="Episode 01 · Lunsen" disabled>( field footage — published at launch )</button>
-          <h3>Episode 01 · Lunsen</h3>
-          <span class="data">outcome: campable · rock slab, dry</span>
-          <span class="data">1.9 km from road · 2 nights</span>
-        </article>
-        <article class="episode reveal" style="--stagger:2">
-          <button class="thumb" data-yt="" data-title="Episode 02 · Norrtälje inland" disabled>( field footage — published at launch )</button>
-          <h3>Episode 02 · Norrtälje inland</h3>
-          <span class="data verdict-bad">outcome: wrong — waterlogged after rain</span>
-          <span class="data">model adjusted: wetness weight raised</span>
-        </article>
-        <article class="episode reveal" style="--stagger:3">
-          <button class="thumb" data-yt="" data-title="Episode 03 · Södertörn" disabled>( field footage — published at launch )</button>
-          <h3>Episode 03 · Södertörn</h3>
-          <span class="data">outcome: campable · sparse pine forest</span>
-          <span class="data">40 min walk from parking</span>
-        </article>
+      <div class="rows reveal" style="--stagger:1">
+        <div>
+          <span class="data">resolution</span>
+          <p>The elevation model is 2 m coarse. Boulders, ditches and windthrow
+          don't show.</p>
+        </div>
+        <div>
+          <span class="data">currency</span>
+          <p>Government data updates in cycles. A fresh clear-cut can be ahead
+          of the map.</p>
+        </div>
+        <div>
+          <span class="data">weather</span>
+          <p>A forecast is a forecast. The weather layer filters your search —
+          it doesn't guarantee the night.</p>
+        </div>
+        <div>
+          <span class="data">on the ground</span>
+          <p>Signs, local rules and judgement outrank every computed zone.
+          Allemansrätten applies to you, not the app.</p>
+        </div>
       </div>
-      <p class="caption reveal" style="--stagger:4; margin-top:32px">Failures are reported
-      openly. Video loads only when you click — via youtube-nocookie.</p>
+      <p class="quiet reveal" style="--stagger:2; margin-top:40px">The final call is
+      made with your boots on.</p>
     </div>
   </section>
 

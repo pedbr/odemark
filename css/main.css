@@ -222,7 +222,7 @@ hr.rule { border: 0; border-top: 1px solid var(--edge); }
 .hero .tagline {
   font-family: var(--serif); font-style: italic;
   font-size: 17px; color: var(--fg-2);
-  margin-top: 18px;
+  margin: 18px auto 0;
 }
 .hero .hero-line {
   margin: 56px auto 0; max-width: 44ch;
@@ -230,6 +230,22 @@ hr.rule { border: 0; border-top: 1px solid var(--edge); }
 }
 .hero-actions {
   margin-top: 56px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+}
+
+/* hero grammar — the product in one glance, in the symbol's own notation */
+.hero-grammar {
+  margin: 56px auto 0;
+  display: flex; gap: 14px 22px; justify-content: center; align-items: center; flex-wrap: wrap;
+}
+.hero-grammar .g-item { display: flex; align-items: center; gap: 12px; }
+.hero-grammar .g-item svg { width: 26px; height: 26px; flex: none; }
+.hero-grammar .g-arrow {
+  font-family: var(--mono); font-size: 13px; color: var(--fg-3);
+  user-select: none;
+}
+@media (max-width: 640px) {
+  .hero-grammar { flex-direction: column; gap: 14px; }
+  .hero-grammar .g-arrow { transform: rotate(90deg); }
 }
 .hero-scroll {
   position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
@@ -258,6 +274,15 @@ hr.rule { border: 0; border-top: 1px solid var(--edge); }
   overflow: hidden;
   background: #0A0D10;
 }
+.demo-head {
+  display: flex; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--edge);
+  background: var(--bg);
+  transition: background-color var(--t-surface) var(--ease);
+}
+.demo-head .caption { color: var(--fg-2); }
+
 .demo-toolbar {
   display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
   padding: 14px;
@@ -510,6 +535,7 @@ button.thumb:hover { color: var(--fg); border-color: var(--fg-3); }
 .install { text-align: center; }
 .install .hero-symbol { margin-bottom: 32px; }
 .install h2 { margin: 0 auto; max-width: 22ch; }
+.install .lede { margin-left: auto; margin-right: auto; }
 .store-row { margin-top: 40px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 .region-form { margin: 72px auto 0; max-width: 420px; text-align: left; }
 .region-form label { display: block; margin-bottom: 10px; }

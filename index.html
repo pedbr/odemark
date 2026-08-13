@@ -58,6 +58,23 @@
       <p class="hero-line">Ödemark beräknar ofunnen tältmark ur offentliga geodata,
       under allemansrättens regler. Zoner, aldrig nålar.
       Platserna du hittar förblir privata.</p>
+      <div class="hero-grammar" role="img"
+           aria-label="Offentliga geodata blir beräknade zoner, som blir ditt privata bibliotek">
+        <span class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="8" x2="22" y2="8"/><line x1="4" y1="13" x2="18" y2="13"/><line x1="4" y1="18" x2="21" y2="18"/></g></svg>
+          <span class="caption">Offentliga geodata</span>
+        </span>
+        <span class="g-arrow" aria-hidden="true">→</span>
+        <span class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="9" fill="none" stroke="var(--zone)" stroke-width="1.8" stroke-dasharray="4 3.4" stroke-linecap="round"/></svg>
+          <span class="caption">Beräknade zoner</span>
+        </span>
+        <span class="g-arrow" aria-hidden="true">→</span>
+        <span class="g-item">
+          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="4.5" fill="currentColor"/></svg>
+          <span class="caption">Ditt privata bibliotek</span>
+        </span>
+      </div>
       <div class="hero-actions">
         <a class="btn" href="#karta">Se kartan räkna</a>
         <a class="btn btn-accent" href="#hamta">Hämta appen</a>
@@ -72,12 +89,17 @@
       <div class="section-head reveal">
         <span class="caption">01 · Kartan</span>
         <h2 id="karta-title">Skriv en ort. Kartan räknar.</h2>
-        <p class="lede">Ingen inloggning. Zonerna beräknas ur terrängen — lutning,
-        markfuktighet, avstånd till väg och bebyggelse, skyddade områden.
-        Just nu: Stockholms län.</p>
+        <p class="lede">En förenklad förhandsvisning av appens beräkning, direkt i
+        webbläsaren — ingen inloggning. Zonerna räknas ur terrängen på samma sätt
+        som i appen: lutning, markfuktighet, avstånd till väg och bebyggelse,
+        skyddade områden. Appen gör detta på riktig terräng. Just nu: Stockholms län.</p>
       </div>
 
       <div class="demo-frame reveal" style="--stagger:1">
+        <div class="demo-head">
+          <span class="caption">Webbdemo — förenklad terräng</span>
+          <span class="caption">Appen räknar på riktiga data · © Lantmäteriet</span>
+        </div>
         <div class="demo-toolbar">
           <input type="text" id="demo-place" list="towns" placeholder="Ort i Stockholms län"
                  aria-label="Ort i Stockholms län" autocomplete="off" spellcheck="false">
@@ -104,7 +126,6 @@
               <a class="btn" href="#lan">Säg till när mitt län räknas</a>
             </div>
           </div>
-          <span class="demo-attrib">förenklad demoterräng · appen: © Lantmäteriet</span>
         </div>
       </div>
 
@@ -278,38 +299,40 @@
     </div>
   </section>
 
-  <!-- ground truth -->
-  <section class="ground-truth" aria-labelledby="mark-title">
+  <!-- the data's limits -->
+  <section class="ground-truth privacy-flat" aria-labelledby="mark-title">
     <div class="backdrop" style="--mist-url:url('/img/mist.jpg')" aria-hidden="true"></div>
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="caption">07 · Markkontroll</span>
-        <h2 id="mark-title">Algoritmen väljer. Sedan åker vi dit.</h2>
-        <p class="lede">Ödemark pekar ut en zon grundaren aldrig sett. Han går in,
-        filmar och redovisar utfallet — även när beräkningen har fel.</p>
+        <span class="caption">07 · Förbehåll</span>
+        <h2 id="mark-title">Kartan är en beräkning. Marken är verklig.</h2>
+        <p class="lede">Zonerna är förslag härledda ur data och dina filter — inte
+        löften. Appen pekar ut var det ser ut att vara värt att gå in. Du avgör
+        på plats.</p>
       </div>
-      <div class="episodes">
-        <article class="episode reveal" style="--stagger:1">
-          <button class="thumb" data-yt="" data-title="Avsnitt 01 · Lunsen" disabled>( fältfilm — publiceras vid lansering )</button>
-          <h3>Avsnitt 01 · Lunsen</h3>
-          <span class="data">utfall: tältbart · hällmark, torr</span>
-          <span class="data">1,9 km från väg · 2 nätter</span>
-        </article>
-        <article class="episode reveal" style="--stagger:2">
-          <button class="thumb" data-yt="" data-title="Avsnitt 02 · Norrtälje inland" disabled>( fältfilm — publiceras vid lansering )</button>
-          <h3>Avsnitt 02 · Norrtälje inland</h3>
-          <span class="data verdict-bad">utfall: fel — sankmark efter regn</span>
-          <span class="data">modellen justerad: fuktvikt höjd</span>
-        </article>
-        <article class="episode reveal" style="--stagger:3">
-          <button class="thumb" data-yt="" data-title="Avsnitt 03 · Södertörn" disabled>( fältfilm — publiceras vid lansering )</button>
-          <h3>Avsnitt 03 · Södertörn</h3>
-          <span class="data">utfall: tältbart · gles tallskog</span>
-          <span class="data">40 min gång från parkering</span>
-        </article>
+      <div class="rows reveal" style="--stagger:1">
+        <div>
+          <span class="data">upplösning</span>
+          <p>Höjdmodellen är 2 m grov. Stenar, diken och vindfällen syns inte.</p>
+        </div>
+        <div>
+          <span class="data">aktualitet</span>
+          <p>Myndighetsdata uppdateras i cykler. En färsk avverkning kan ligga
+          före kartan.</p>
+        </div>
+        <div>
+          <span class="data">väder</span>
+          <p>En prognos är en prognos. Väderlagret filtrerar sökningen — det
+          garanterar inte natten.</p>
+        </div>
+        <div>
+          <span class="data">på plats</span>
+          <p>Skyltar, lokala föreskrifter och omdöme går före varje beräknad zon.
+          Allemansrätten gäller dig, inte appen.</p>
+        </div>
       </div>
-      <p class="caption reveal" style="--stagger:4; margin-top:32px">Felen redovisas öppet.
-      Video laddas först när du klickar — via youtube-nocookie.</p>
+      <p class="quiet reveal" style="--stagger:2; margin-top:40px">Det sista avgörandet
+      gör du med kängorna på.</p>
     </div>
   </section>
 
